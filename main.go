@@ -43,4 +43,18 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("public key(pkcs8):", publicKey)
+
+	fmt.Println()
+	data := "hello golang"
+	encData, err := grsa.RSAEncrypt(data, "./public.pem")
+	if err != nil {
+		panic(err)
+	}
+	decData, err := grsa.RSADecrypt(encData, "./private.pem")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("plain data:", data)
+	fmt.Println("encrypt data:", encData)
+	fmt.Println("decrypt data:", decData)
 }

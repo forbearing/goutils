@@ -1,8 +1,10 @@
 package rsa
 
 import (
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"io/ioutil"
 )
@@ -16,6 +18,45 @@ import (
 4:私钥 PKCS1 转 PKCS8
   openssl pkcs8 -topk8 -inform pem -in private.pem -outform PEM -nocrypt
 */
+
+// 解密(使用私钥解密)
+func RSADecrypt(encData, privateKeyPath string) (string, error) {
+	// 反解 base64
+	decodeData, err := base64.StdEncoding.DecodeString(encData)
+	if err != nil {
+		return "", err
+	}
+
+	// 读取密钥
+	privateKey, err := ReadRSAPrivateKey(privateKeyPath)
+	if err != nil {
+		return "", err
+	}
+
+	// 解密
+	decryptData, err := rsa.DecryptPKCS1v15(rand.Reader, privateKey, decodeData)
+	return string(decryptData), err
+
+}
+
+// 加密(使用公钥加密)
+func RSAEncrypt(data, publicKeyPath string) (string, error) {
+	// 获取公钥
+	publicKey, err := ReadRSAPublicKey(publicKeyPath)
+	if err != nil {
+		return "", err
+	}
+
+	// 加密
+	msg, err := rsa.EncryptPKCS1v15(rand.Reader, publicKey, []byte(data))
+	if err != nil {
+		return "", err
+	}
+
+	// 把加密结果转成 Base64
+	return base64.StdEncoding.EncodeToString(msg), nil
+
+}
 
 // 读取私钥
 func ReadRSAPrivateKey(name string) (*rsa.PrivateKey, error) {

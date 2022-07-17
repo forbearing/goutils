@@ -21,7 +21,6 @@ func String(mymap map[string]string) string {
 // eg: "name=hybfkuf,age=100"
 // eg: "name=hybfkuf, age=100"
 func Set(mymap map[string]string, value string) error {
-
 	for _, s := range strings.Split(value, ",") {
 		if len(s) == 0 {
 			continue
